@@ -6,7 +6,7 @@ git clone https://github.com/Yuma248/SNPcallingPipe
   
 # Dependecies 
 
-Perl Parallel:::Loops <Enter>
+Perl Parallel:::Loops
 
 GNU Parallel
 
