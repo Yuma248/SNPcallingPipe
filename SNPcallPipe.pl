@@ -1,0 +1,103 @@
+#!/home/sand0335//miniconda3/envs/SNPcallPipeY/bin/perl -w
+
+while (@ARGV){
+	$_=shift @ARGV;
+	if ($_=~ /^-stp$/){$stp=shift @ARGV;}
+	elsif ($_=~ /^-i$/){$input=shift @ARGV;}
+	elsif($_=~ /^-o$/){$output=shift @ARGV;}
+	elsif ($_=~ /^-bf$/){$barcode_file=shift @ARGV;}
+	elsif ($_=~ /^-fm$/){$fm=shift @ARGV;}
+	elsif ($_=~ /^-rad$/){$radtag=shift @ARGV;}
+	elsif ($_=~ /^-lnc$/){$lnc=shift @ARGV;}
+	elsif ($_=~ /^-snc$/){$snc=shift @ARGV;}
+	elsif ($_=~ /^-rg$/){$reference=shift @ARGV;}
+        elsif ($_=~ /^-stpn$/){$stpn=shift @ARGV;}
+	elsif ($_=~ /^-pf$/){$pf=shift @ARGV;}
+	elsif ($_=~ /^-al$/){$B=shift @ARGV;}
+	elsif ($_=~ /^-t$/){$type=shift @ARGV;}
+	elsif ($_=~ /^-ind$/){$ind=shift @ARGV;}
+	elsif ($_=~ /^-exf$/){$exf=shift @ARGV;}
+}
+if (not defined ($stp)){print "\nThis pipline will demultiplex, trim and\/or map reads, and call SNPs and filter them. The requrie arguments and inputs depend of the steps you want to performe. The script will start to run from the step you select by default, but if you what just to run one step, you will have to use the option -stpn 1. To check the steps names run the script without no arguments.\n\nUsage:\nSNPcallPipe\n\t-stp <You need at least determine what steps you want to run>\n\t\tindref\: <Indexs the reference genome with samtools, picard and bowtie2>\n\t\tdemul\: <It will use stacks process_rad script, to demultiples samples base on a barcode file>\n\t\ttrim\: <It will use AdapterRemoval to trim and filter reads>\n\t\taligment\: <It will use bowtie2 or bwq to align reads to a referecne genome>\n\t\tdedup\: <This step will sort sam files, cnvert to bam and mask duplicates>\n\t\tindelrea\: <This step will locally realign indels, although this is not recomended any more>\n\t\tcalling\: <This step will use bcftool and mpileup to call variant sites SNP/indel>\n\t\tfiltering\: <This step will use vcftools to filter SNPs, I recomend to use this automatically to have an idea of youdata, but play wiht the parameters if you have the time>\n\n"; exit;}
+if (not defined ($stprn)){$stprn = 0};
+if (not defined ($stpn)){$stpn =0};
+use lib "/scratch/user/sand0335/github/SNPcallPipe";
+our $stprn =0;
+our @stptr = split (/,/, $stp);
+foreach $stp (@stptr){
+	if ($stp eq "indref"){
+        	use indexgenome;
+		if (not defined ($input && $reference)){print "\nThis script will indexs a reference genome using samtools, picard and bowtie2. The genome should have extention fna.\n\nUsage:\nSNPcallPipe.pl -stp indref\n\t-i <input folder where the reference is, and where all the indeces and dictionaries will be saved>\n\t-rg <the name of the reference genome incluiding the extention>\n\t-pf <path to the picar jar executable>\n\nExample:\nSNPcallpipe.pl -stp indref -i yume/genomes/ -rg Taust.Chr.fna -pf /local/SNOcallPipe/\n"; exit;}
+        	our @arg = ("-i $input","-rg $reference","-pf $pf");
+	        indexgenome::indrg(@arg);
+        	$stprn = 0;
+	}
+	elsif ($stp eq "demul"){
+		use dDocent;
+		if (not defined ($input && $barcode_file)){print "\nThis script uses stacks's process_rad to demultiplex fasta files.\n\nUsage:\nSNPcallPipe.pl -stp demul\n\t-i <directory with raw sequencing files>\n\t-o <output folder, if it does no exist it will be created>\n\t-bf <barcode file, tab delimited (LaneName SampleName Barcode Single Popnumber)>\nOptional:\n\t-lnc <number of lanes in parallel, or number of R1 files in you folder. default 1>\n\t-snc <number of samples perl lane in parallel, optimum 58/number of R1 files in you folder. default 10>\n\t-rad <RAD_tag, default TGCAGG TAA>\n\nFor example:\nSNPcallPipe.pl -stp demul -i /yuma/rawread/ -o /yuma/demultiplex -bf /yuma/barcodefile -lnc 1 -snc 10 \n\n"; exit;}
+		if (not defined $output){$output = "./demultiplex";}
+		if (not defined $radtag){$radtag = "TGCAGG\tTAA\tsample";} ## default RAD-tag
+		if (not defined $lnc){$nc=1;}
+		if (not defined $snc){$nc=10;}
+		our @arg = ("-i $input","-o $output","-bf $barcode_file","-lnc $lnc","-snc $snc", "-rad $radtag");
+		dDocent::demul(@arg);
+		$stprn = 1; 
+	}
+	elsif ($stp eq "trim" or $stprn == 1){
+		use RemAdap;
+		if (not defined ($input)){print "\nThis script will trimme quality and colapse overlapping PE reads from several samples using AdapterRemoval in parallel. Requires your files after demultiplexing and compressed (sample01.1.fq.gz or sample01_1.fq.gz), all save in one folder.\n\nUsages:\nSNPcallPipe.pl -stp trim\n\t-i <path to inputfolder, if samples are each in one folder use the option -fm>\n\nOptional:\n\t-o <path to outputfolder, default same as inputfolder>\n\t-snc <number the cores or samples to use in parallel, default 4>\n\t-fm <if sequnece file are in one folder per sample (y or n), default n, either the folders or the sequnces shoud be in one folder>\n\t-exf <Extention of demultiplexed or sequences fastq files, default 1.fq.gz,2.fq.gz>\n\nExample:\nSNPcalPipe.pl -stp trim -i /yuma/WGS/ -o /yuma/remadap/ -fm y -snc 62 -exf F.fq.gz,R.fq.gz\n\n";exit;}
+		if (not defined ($output)){$output=$input;}
+		if (not defined ($nc)){$nc = 4;}
+		if (not defined ($fm)){$fm = "n";}
+		if (not defined ($exf)){$exf ="1.fq.gz,2.fq.gz";}
+        	our @arg = ("-i $input","-o $output","-fm $fm","-nc $snc","-exf $exf");
+	        RemAdap::trim(@arg);
+        	$stprn = 2;
+	}
+	elsif ($stp eq "aligment" or $stprn == 2){
+        	use BWAB2;
+		if (not defined ($reference && $input && $output)){print "\nThis script will map reads of several samples to a reference genome using bwa-mem in parallel. It requires files (after demultiplexing and trimming) of all samples storaged in the same folder\n\nUsage:\nBWAparallel.pl\n\t-rg <path to the reference genome fasta file>\n\t-i <path to the folder with the input fasta files>\n\t-o <path to the output folder>\n Optional:\n\t-lnc <number of runs in parallel, default 1>\n\t-snc <number cores for each run, default 4>\n\t-al <aligner to be used, BWA or B2 for bowtie2, default BWA>\n\t-t <sequencing type single-end \"S\" or paired-end \"P\", default P> \n\nFor example:\nSNPcallPipe -stp aligment -rg /home/Yumafan/genome/reference_genome.fasta -i /home/Yumafan/demultiplex/trimmed/ -o /home/Yumafan/bwaout/ -lnc 10 -snc 4 -al BWA -t P\n\n"; exit;}
+		if (not defined ($lnc)){$lnc=1;}
+		if (not defined ($snc)){$snc=4;}
+		if (not defined ($B)){$B="BWA";}
+		if (not defined ($type)){$type="P";}
+	        our @arg = ("-i $input","-o $output","-rg $reference","-al $B","-t $type","-ncr $snc","-ncp $lnc");
+        	BWAB2::align(@arg);
+	        $stprn = 3;
+
+	}
+	elsif ($stp eq "dedup" or $stprn == 3){
+        	use samdedup;
+		if (not defined ($input)){print "\nThis script will convert from sam to bam, sort by name, fixmates, sort by coordinates and markduplicates using samtools in parallel. Requires your sam files after mapping (sample01.sam), all save in one folder.\n\nUsages:\nSNPcallPipe.pl -stp dedup\n\t-i <path to inputfolder>\n\nOptional:\n\t-o <path to outputfolder, default samout>\n\t-lnc <number the cores or samples to use in parallel, default 4>\n\t-snc <number of cores per sample, default 1>\n\nExample:\nSNPcallPipe -stp dedup -i /home/Yumafan/demultiplex/trimmed/bwaout -o /home/Yumafan/dedupout/ -lnc 10 -snc 4\n\n";exit;}
+		if (not defined ($lnc)){$lnc=4;}
+		if (not defined ($snc)){$snc=1;}
+		if (not defined ($output)){$output="./samout";}
+	        our @arg = ("-i $input","-o $output","-nc $lnc","-ncp $snc");
+        	samdedup::dedup(@arg);
+	        $stprn = 4;
+
+	}
+	elsif ($stp eq "indelrea" or $stprn == 4){
+        	use indelrealigment;
+		if (not defined ($reference && $input && $output)){print "\nThis script will create a list of indel per sample, and it will realign reads around indels for a more efficient variants calling. It uses GATK in parallel to process several samples at the same time.\n\nUsage:\nSNPcallPipe.pl -stp indelrea\n\t-i <input folder with sorted bam files>\n\t-o <output folder to save the realigments>\n\t-rg <path to the reference genome>\nOptional:\n\t-snc <number cores to run in parallel, default 4>\n\t-ind <\"yes\" if you need to index your bam files, or \"no\" if they are already indexed, default \"yes\">\n\nExample:\nSNPcallPipe.pl -stp indelrea -i ./Yuma/sam2bamout/ -o ./Yuma/indelout/ -rg ./Yuma/genomes/reference.fasta -snc 8 -ind yes\n\n"; exit;}
+		if (not defined ($snc)){$snc=8;}
+		if (not defined ($ind)){$ind="yes";}	
+        	our @arg = ("-i $input","-o $output","-ind $ind","-ncp $snc","-rg $reference");
+	        indelrealigment::indelreal(@arg);
+        	$stprn = 5;
+	}
+	elsif ($stp eq "calling" or $stprn == 5){
+        	use bcftoolSNP;
+		if (not defined ($input && $output)){print "\nThis script will create the bcftools command to call SNPs for several samples in parallel. Its need the mapped bam files with realigned indels in a folder.\n\nUsage:\nSNPcallPipe -stp calling\n\t-i <input folder with mapped bam files with realigned indels>\n\t-o <output folder to save vcf files>\n\t-rg <reference genome>\n\t-snc <number the cores to be used in parallel, recomend to use the number of Chromosomes, default 20>\n\nExample:\nSNPcallPipe.pl -stp calling -i ./Yuma/indelrealigned/ -o ./Yuma/rawvcf/ -rg ./Yuma/genome/reference_genome.fasta -snc 23\n\n"; exit;}
+		if (not defined ($snc)){$snc = 20;}
+	        our @arg = ("-i $input","-o $output","-nc $snc","-rg $reference");
+        	bcftoolSNP::callSNPs(@arg);
+	        $stprn = 6;
+	}
+	elsif ($stp eq "filtering" or $stprn == 6){
+        	use vcftoolsF;
+	        our @arg = ("-i $input","-o $output","-ind $ind","-ncp $lnc","-rg $reference");
+        	vcftoolsF::filteringY(@arg);
+	        $stprn = 7;
+	}
+}
