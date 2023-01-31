@@ -7,6 +7,7 @@ git clone https://github.com/Yuma248/SNPcallingPipe
 # Dependecies 
 
 Perl Parallel:::Loops
+
 GNU Parallel
 Stacks
 AdapterRemoval
