@@ -45,15 +45,15 @@ foreach my $file (@files){next unless ($file =~ /\.bam$/ ); my @fileinf =split (
 
 if (@pops){
 $cmd2="parallel --xapply -j 38 --results ./logfilesIR --noswap samtools index $inputfolder\/{2}_{1}_{3}\.bam ::: @samplesnames ::: @pops ::: @term";
-$cmd1="parallel --xapply -j $ncp --results ./logfilesIR --noswap java -jar /scratch/user/sand0335/github/SNPcallPipe/GenomeAnalysisTK.jar -T RealignerTargetCreator -R $refgenome -I $inputfolder\/{2}\_{1}_{3}\.bam -o $outputfolder\/{2}\_{1}\_intervals\.list ::: @samplesnames ::: @pops ::: @term";
-$cmd="parallel --xapply -j $ncp --results ./logfilesIR --noswap java -jar /scratch/user/sand0335/github/SNPcallPipe/GenomeAnalysisTK.jar -T IndelRealigner -R $refgenome -I $inputfolder\/{2}\_{1}_{3}\.bam -targetIntervals $outputfolder\/{2}\_{1}\_intervals\.list -o $outputfolder\/{2}\_{1}\_realigned.bam ::: @samplesnames ::: @pops ::: @term";
+$cmd1="parallel --xapply -j $ncp --results ./logfilesIR --noswap java -jar ./SNPcallPipe/GenomeAnalysisTK.jar -T RealignerTargetCreator -R $refgenome -I $inputfolder\/{2}\_{1}_{3}\.bam -o $outputfolder\/{2}\_{1}\_intervals\.list ::: @samplesnames ::: @pops ::: @term";
+$cmd="parallel --xapply -j $ncp --results ./logfilesIR --noswap java -jar ./SNPcallPipe/GenomeAnalysisTK.jar -T IndelRealigner -R $refgenome -I $inputfolder\/{2}\_{1}_{3}\.bam -targetIntervals $outputfolder\/{2}\_{1}\_intervals\.list -o $outputfolder\/{2}\_{1}\_realigned.bam ::: @samplesnames ::: @pops ::: @term";
 
 }
 else{
 $cmd2="parallel -j 38 --results ./logfilesIR --noswap samtools index $inputfolder\/{1}_{2}\.bam ::: @samplesnames ::: @term";
 #$cmd3="parallel -j $ncp --results ./logfilesIR --noswap samtools index $inputfolder\/sort_{1}\.bam ::: @samplesnames";
-$cmd1 ="parallel -j $ncp --results ./logfilesIR --noswap java -jar /scratch/user/sand0335/github/SNPcallPipe/GenomeAnalysisTK.jar -T RealignerTargetCreator -R $refgenome -I $inputfolder\/{1}_{2}\.bam -o $outputfolder\/{1}\_intervals\.list ::: @samplesnames ::: @term";
-$cmd ="parallel -j $ncp --results ./logfilesIR --noswap java -jar /scratch/user/sand0335/github/SNPcallPipe/GenomeAnalysisTK.jar -T IndelRealigner -R $refgenome -I $inputfolder\/{1}_{2}\.bam -targetIntervals $outputfolder\/{1}\_intervals\.list -o $outputfolder\/{1}\_realigned.bam ::: @samplesnames ::: @term";
+$cmd1 ="parallel -j $ncp --results ./logfilesIR --noswap java -jar ./SNPcallPipe/GenomeAnalysisTK.jar -T RealignerTargetCreator -R $refgenome -I $inputfolder\/{1}_{2}\.bam -o $outputfolder\/{1}\_intervals\.list ::: @samplesnames ::: @term";
+$cmd ="parallel -j $ncp --results ./logfilesIR --noswap java -jar ./SNPcallPipe/GenomeAnalysisTK.jar -T IndelRealigner -R $refgenome -I $inputfolder\/{1}_{2}\.bam -targetIntervals $outputfolder\/{1}\_intervals\.list -o $outputfolder\/{1}\_realigned.bam ::: @samplesnames ::: @term";
 }
 if ($ind=~ m/y/){
 print "$cmd2\n";
