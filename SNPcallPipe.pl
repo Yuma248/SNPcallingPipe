@@ -23,6 +23,9 @@ if (not defined ($stprn)){$stprn = 0};
 if (not defined ($stpn)){$stpn =0};
 use File::Basename;
 use lib dirname (__FILE__) . "/SNPcallPipe";
+use Cwd 'abs_path';
+my $SCP1= abs_path($0);
+$SCP1 =~ s/\.pl$/\//;
 #use lib "/scratch/user/sand0335/github/SNPcallPipe";
 our $stprn =0;
 our @stptr = split (/,/, $stp);
@@ -30,6 +33,7 @@ foreach $stp (@stptr){
 	if ($stp eq "indref"){
         	use indexgenome;
 		if (not defined ($input && $reference)){print "\nThis script will indexs a reference genome using samtools, picard and bowtie2. The genome should have extention fna.\n\nUsage:\nSNPcallPipe.pl -stp indref\n\t-i <input folder where the reference is, and where all the indeces and dictionaries will be saved>\n\t-rg <the name of the reference genome incluiding the extention>\n\t-pf <path to the picar jar executable>\n\nExample:\nSNPcallpipe.pl -stp indref -i yume/genomes/ -rg Taust.Chr.fna -pf /local/SNOcallPipe/\n"; exit;}
+		if (not defined ($pf)){$pf = $SCP1;}
         	our @arg = ("-i $input","-rg $reference","-pf $pf");
 	        indexgenome::indrg(@arg);
         	$stprn = 0;
