@@ -95,9 +95,9 @@ foreach $stp (@stptr){
 	        $stprn = 6;
 	}
 	elsif ($stp eq "filtering" or $stprn == 6){
-        	use vcftoolsF;
-	        our @arg = ("-i $input","-o $output","-ind $ind","-ncp $lnc","-rg $reference");
-        	vcftoolsF::filteringY(@arg);
-	        $stprn = 7;
+        	##use vcftoolsF;
+	        ##our @arg = ("-i $input","-o $output","-ind $ind","-ncp $lnc","-rg $reference");
+        	##vcftoolsF::filteringY(@arg);
+	        ##$stprn = 7;
 	}
 }
