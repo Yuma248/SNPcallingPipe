@@ -117,9 +117,9 @@ my $s_name = $hash{$raw}{code}{$bcode};
 												#print "$mycmd\n";	
  	 											`zcat $outdDocent/pop$hash_pop{$s_name}\_$s_name\.R.fq.gz \| perl -pe  \'s/\\/2\\/2/\\/2/g\' \| gzip  -c > $outdDocent/pop$hash_pop{$s_name}\_$s_name.Ra.fq.gz`;												
 												`zcat $outdDocent/pop$hash_pop{$s_name}\_$s_name\.F.fq.gz \| perl -pe  \'s/\\/1\\/1/\\/1/g\' \| gzip -c > $outdDocent/pop$hash_pop{$s_name}\_$s_name\.Fa.fq.gz`;
-												#`rm $outdDocent/pop$hash_pop{$s_name}\_$s_name\.[FR].fq.gz`;
-												`mv $outdDocent/pop$hash_pop{$s_name}\_$s_name\.Fa.fq.gz $outdDocent/pop$hash_pop{$s_name}\_$s_name\.Fb.fq.gz`;
-												`mv $outdDocent/pop$hash_pop{$s_name}\_$s_name\.Ra.fq.gz $outdDocent/pop$hash_pop{$s_name}\_$s_name\.Rb.fq.gz`;
+												`rm $outdDocent/pop$hash_pop{$s_name}\_$s_name\.[FR].fq.gz`;
+												`mv $outdDocent/pop$hash_pop{$s_name}\_$s_name\.Fa.fq.gz $outdDocent/pop$hash_pop{$s_name}\_$s_name\.F.fq.gz`;
+												`mv $outdDocent/pop$hash_pop{$s_name}\_$s_name\.Ra.fq.gz $outdDocent/pop$hash_pop{$s_name}\_$s_name\.R.fq.gz`;
 												
 
 						});
