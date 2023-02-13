@@ -43,8 +43,8 @@ foreach $stp (@stptr){
 		if (not defined ($input && $barcode_file)){print "\nThis script uses stacks's process_rad to demultiplex fasta files.\n\nUsage:\nSNPcallPipe.pl -stp demul\n\t-i <directory with raw sequencing files>\n\t-o <output folder, if it does no exist it will be created>\n\t-bf <barcode file, tab delimited (LaneName SampleName Barcode Single Popnumber)>\nOptional:\n\t-lnc <number of lanes in parallel, or number of R1 files in you folder. default 1>\n\t-snc <number of samples perl lane in parallel, optimum 58/number of R1 files in you folder. default 10>\n\t-rad <RAD_tag, default TGCAGG TAA>\n\nFor example:\nSNPcallPipe.pl -stp demul -i /yuma/rawread/ -o /yuma/demultiplex -bf /yuma/barcodefile -lnc 1 -snc 10 \n\n"; exit;}
 		if (not defined $output){$output = "./demultiplex";}
 		if (not defined $radtag){$radtag = "TGCAGG\tTAA\tsample";} ## default RAD-tag
-		if (not defined $lnc){$nc=1;}
-		if (not defined $snc){$nc=10;}
+		if (not defined $lnc){$lnc=1;}
+		if (not defined $snc){$snc=10;}
 		our @arg = ("-i $input","-o $output","-bf $barcode_file","-lnc $lnc","-snc $snc", "-rad $radtag");
 		dDocent::demul(@arg);
 		$stprn = 1; 
