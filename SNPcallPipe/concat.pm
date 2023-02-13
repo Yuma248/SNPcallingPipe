@@ -1,7 +1,7 @@
-package coca;
+package concat;
 
 my $LEVEL = 1;
-sub concat{
+sub coca{
 my @arg = @_;
 foreach $ar (@arg){
 	if ($ar =~ /^-i/){our $inputfolder = (split(/ /,$ar))[1];}
