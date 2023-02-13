@@ -60,15 +60,15 @@ foreach $stp (@stptr){
 	        RemAdap::trim(@arg);
         	$stprn = 2;
 	}
-	elsif ($stp eq "concat" or $stprn == 1){
-		use concat;
-		if (not defined ($inputfolder && $outputfolder)){print "\nThis script will concatenate fastq files of raw or trimmed reads of several samples in parallel. It requires fastq files of all samples stored in the same folder\n\nUsage:\nConcat.pl\n\t-i <path to the folder with the input fastq files>\n\t-o <path to the output folder>\n Optional:\n\t-snc <number of runs in parallel, default 10>\n\t-t <method used for trimming. Trimmomatic TR, AdapterRemoval AR or None NO if are raw sequences, default AR>\n\t-exf <this will tell the script how to extract the name of each sample, and should include all extra information at the end of the file names that is not related to the sample name, default P1_L001_>\n\nFor example:\nconcat.pl -i /home/Yumafan/demultiplex/trimmed/ -o /home/Yumafan/concatenated-snc 10 -t AR -exf P1_L001_\n\n"; exit;}
-		if (not defined ($snc)){$snc =10;}
-		if (not defined ($type)){$type = "RA";}
-		if (not defined ($exf)){$exf ="P1_L001_";}
-        	our @arg = ("-i $input","-o $output","-nc $snc","-exf $exf","-t $type");
-	        concat::coca(@arg);
-        	$stprn = 2;
+	#elsif ($stp eq "concat" or $stprn == 1){
+	#	use concat;
+	#	if (not defined ($inputfolder && $outputfolder)){print "\nThis script will concatenate fastq files of raw or trimmed reads of several samples in parallel. It requires fastq files of all samples stored in the same folder\n\nUsage:\nConcat.pl\n\t-i <path to the folder with the input fastq files>\n\t-o <path to the output folder>\n Optional:\n\t-snc <number of runs in parallel, default 10>\n\t-t <method used for trimming. Trimmomatic TR, AdapterRemoval AR or None NO if are raw sequences, default AR>\n\t-exf <this will tell the script how to extract the name of each sample, and should include all extra information at the end of the file names that is not related to the sample name, default P1_L001_>\n\nFor example:\nconcat.pl -i /home/Yumafan/demultiplex/trimmed/ -o /home/Yumafan/concatenated-snc 10 -t AR -exf P1_L001_\n\n"; exit;}
+	#	if (not defined ($snc)){$snc =10;}
+	#	if (not defined ($type)){$type = "RA";}
+	#	if (not defined ($exf)){$exf ="P1_L001_";}
+        #	our @arg = ("-i $input","-o $output","-nc $snc","-exf $exf","-t $type");
+	#       concat::coca(@arg);
+        #	$stprn = 2;
 	}
 	elsif ($stp eq "aligment" or $stprn == 2){
         	use BWAB2;
