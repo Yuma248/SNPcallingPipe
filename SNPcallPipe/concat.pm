@@ -23,8 +23,8 @@ if ( !-d $tmpdir ) {
 }
 if (not defined ($snc)){$snc =10;}
 
-if ($type == "AR"){
-	my @names = `ls $inputfolder/*$exf\.collapsed.gz`;
+if ($type eq "AR"){
+	my @names = `ls $inputfolder\/\*$exf\.collapsed.gz`;
 	foreach $name (@names) {chomp $name; $name=~ s/$inputfolder\//g; $name = s/$exf\.collapsed\.gz//g; push (@nms, $name);}
 	foreach $ef ( "singleton.truncated", "collapsed", "collapsed.truncated", "pair1.truncated", "pair2.truncated"){
 		my $cmd = "parallel -j $snc --results $tmpdir --tmp $tmpdir zcat $inputfolder\/{1}*\.$ef\.gz | gzip \'>>\' $outputfolder/{1}\.$ef\.gz ::: @nms";
@@ -32,8 +32,8 @@ if ($type == "AR"){
 		`parallel -j $snc --results $tmpdir --tmp $tmpdir zcat $inputfolder\/{1}*\.$ef\.gz \'|\' gzip \'>\'\'>\' $outputfolder/{1}\.$ef\.gz ::: @nms`
 		}
 }
-elsif ($type == "TR" or $type == "NO"){
-	my @names = `ls $inputfolder/*$exf\.gz`;
+elsif ($type eq "TR" or $type eq "NO"){
+	my @names = `ls $inputfolder\/\*$exf\.gz`;
 	foreach $name (@names) {chomp $name; $name=~ s/$inputfolder\//g; $name = s/$exf\.gz//g; push (@nms, $name);}
 	my $cmd = "parallel -j $snc --results $tmpdir --tmp $tmpdir zcat $inputfolder\/{1}*\.$ef\.gz | gzip \'>>\' $outputfolder/{1}\.$ef\.gz ::: @nms";
 	print "$cmd\n";
