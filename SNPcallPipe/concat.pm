@@ -24,20 +24,22 @@ if ( !-d $tmpdir ) {
 if (not defined ($snc)){$snc =10;}
 
 if ($type eq "AR"){
-	my @names = `ls $inputfolder\/\*$exf\.collapsed.gz`;
-	foreach $name (@names) {chomp $name; $name=~ s/$inputfolder\//g; $name = s/$exf\.collapsed\.gz//g; push (@nms, $name);}
-	foreach $ef ( "singleton.truncated", "collapsed", "collapsed.truncated", "pair1.truncated", "pair2.truncated"){
-		my $cmd = "parallel -j $snc --results $tmpdir --tmp $tmpdir zcat $inputfolder\/{1}*\.$ef\.gz | gzip \'>>\' $outputfolder/{1}\.$ef\.gz ::: @nms";
-		print "$cmd\n";
-		`parallel -j $snc --results $tmpdir --tmp $tmpdir zcat $inputfolder\/{1}*\.$ef\.gz \'|\' gzip \'>\'\'>\' $outputfolder/{1}\.$ef\.gz ::: @nms`
-		}
+        our $code =$exf.".collapsed.gz";
+        my @names = `ls $inputfolder\/*$code`;
+        foreach $name (@names) {chomp $name; $name=~ s/$inputfolder\///g; $name=~ s/$code//g; push (@nms, $name);}
+        foreach $ef ( "singleton.truncated", "collapsed", "collapsed.truncated", "pair1.truncated", "pair2.truncated"){
+                my $cmd = "parallel -j $snc --results $tmpdir --tmp $tmpdir zcat $inputfolder\/{1}*\.$ef\.gz | gzip \'>>\' $outputfolder/{1}\.$ef\.gz ::: @nms";
+                print "$cmd\n";
+                `parallel -j $snc --results $tmpdir --tmp $tmpdir zcat $inputfolder\/{1}*\.$ef\.gz \'|\' gzip \'>\'\'>\' $outputfolder/{1}\.$ef\.gz ::: @nms`
+                }
 }
 elsif ($type eq "TR" or $type eq "NO"){
-	my @names = `ls $inputfolder\/\*$exf\.gz`;
-	foreach $name (@names) {chomp $name; $name=~ s/$inputfolder\//g; $name = s/$exf\.gz//g; push (@nms, $name);}
-	my $cmd = "parallel -j $snc --results $tmpdir --tmp $tmpdir zcat $inputfolder\/{1}*\.$ef\.gz | gzip \'>>\' $outputfolder/{1}\.$ef\.gz ::: @nms";
-	print "$cmd\n";
-	`parallel -j $snc --results $tmpdir --tmp $tmpdir zcat $inputfolder\/{1}*\.gz \'|\' gzip \'>\'\'>\' $outputfolder/{1}\.gz @nms ::: @nms`
+        my $code = $exf.".gz";
+        my @names = `ls $inputfolder\/\*$code`;
+        foreach $name (@names) {chomp $name; $name=~ s/$inputfolder\///g; $name=~ s/$code//g; push (@nms, $name);}
+        my $cmd = "parallel -j $snc --results $tmpdir --tmp $tmpdir zcat $inputfolder\/{1}*\.gz | gzip \'>>\' $outputfolder/{1}\.gz ::: @nms";
+        print "$cmd\n";
+        `parallel -j $snc --results $tmpdir --tmp $tmpdir zcat $inputfolder\/{1}*\.gz \'|\' gzip \'>\'\'>\' $outputfolder/{1}\.gz @nms ::: @nms`
 }
 else {print "You have to select a correct type of file, check the instrcution\n"}
 
