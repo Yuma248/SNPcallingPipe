@@ -32,7 +32,7 @@ our @stptr = split (/,/, $stp);
 foreach $stp (@stptr){
 	if ($stp eq "indref"){
         	use indexgenome;
-		if (not defined ($input && $reference)){print "\nThis script will index a reference genome using samtools, picard and bowtie2. The genome should have extension fna.\n\nUsage:\nSNPcallPipe.pl -stp indref\n\t-i <input folder where the reference is, and where all the indexes and dictionaries will be saved>\n\t-rg <the name of the reference genome incluiding the extention>\n\t-pf <path to the picar jar executable>\n\nExample:\nSNPcallpipe.pl -stp indref -i yume/genomes/ -rg Taust.Chr.fna -pf /local/SNOcallPipe/\n"; exit;}
+		if (not defined ($input && $reference)){print "\nThis script will index a reference genome using samtools, picard and bowtie2. The genome should have extension fna.\n\nUsage:\nSNPcallPipe.pl -stp indref\n\t-i <input folder where the reference is, and where all the indexes and dictionaries will be saved>\n\t-rg <the name of the reference genome incluiding the extention>\n\t-pf <path to the picar jar executable>\n\nExample:\nSNPcallpipe.pl -stp indref -i yuma/genomes/ -rg Taust.Chr.fna -pf /local/SNOcallPipe/\n"; exit;}
 		if (not defined ($pf)){$pf = $SCP1;}
         	our @arg = ("-i $input","-rg $reference","-pf $pf");
 	        indexgenome::indrg(@arg);
@@ -74,7 +74,7 @@ foreach $stp (@stptr){
 	}
 	elsif ($stp eq "dedup" or $stprn == 3){
         	use samdedup;
-		if (not defined ($input)){print "\nThis script will convert from sam to bam, sort by name, fixmates, sort by coordinates and markduplicates using samtools in parallel. Requires your sam files after mapping (sample01.sam), all save in one folder.\n\nUsages:\nSNPcallPipe.pl -stp dedup\n\t-i <path to inputfolder>\n\nOptional:\n\t-o <path to outputfolder, default samout>\n\t-lnc <number the cores or samples to use in parallel, default 4>\n\t-snc <number of cores per sample, default 1>\n\nExample:\nSNPcallPipe -stp dedup -i /home/Yumafan/demultiplex/trimmed/bwaout -o /home/Yumafan/dedupout/ -lnc 10 -snc 4\n\n";exit;}
+		if (not defined ($input)){print "\nThis script will convert from sam to bam, sort by name, fix mates, sort by coordinates and mark duplicates using samtools in parallel. Requires your sam files after mapping (sample01.sam), all save in one folder.\n\nUsages:\nSNPcallPipe.pl -stp dedup\n\t-i <path to inputfolder>\n\nOptional:\n\t-o <path to outputfolder, default samout>\n\t-lnc <number the cores or samples to use in parallel, default 4>\n\t-snc <number of cores per sample, default 1>\n\nExample:\nSNPcallPipe -stp dedup -i /home/Yumafan/demultiplex/trimmed/bwaout -o /home/Yumafan/dedupout/ -lnc 10 -snc 4\n\n";exit;}
 		if (not defined ($lnc)){$lnc=4;}
 		if (not defined ($snc)){$snc=1;}
 		if (not defined ($output)){$output="./samout";}
@@ -85,7 +85,7 @@ foreach $stp (@stptr){
 	}
 	elsif ($stp eq "indelrea" or $stprn == 4){
         	use indelrealigment;
-		if (not defined ($reference && $input && $output)){print "\nThis script will create a list of indel per sample, and it will realign reads around indels for a more efficient variants calling. It uses GATK in parallel to process several samples at the same time.\n\nUsage:\nSNPcallPipe.pl -stp indelrea\n\t-i <input folder with sorted bam files>\n\t-o <output folder to save the realigments>\n\t-rg <path to the reference genome>\nOptional:\n\t-snc <number cores to run in parallel, default 4>\n\t-ind <\"yes\" if you need to index your bam files, or \"no\" if they are already indexed, default \"yes\">\n\nExample:\nSNPcallPipe.pl -stp indelrea -i ./Yuma/sam2bamout/ -o ./Yuma/indelout/ -rg ./Yuma/genomes/reference.fasta -snc 8 -ind yes\n\n"; exit;}
+		if (not defined ($reference && $input && $output)){print "\nThis script will create a list of indels per sample, and it will realign reads around indels for a more efficient variants calling. It uses GATK in parallel to process several samples at the same time, this step is not recommend anymore.\n\nUsage:\nSNPcallPipe.pl -stp indelrea\n\t-i <input folder with sorted bam files>\n\t-o <output folder to save the realignments>\n\t-rg <path to the reference genome>\nOptional:\n\t-snc <number cores to run in parallel, default 4>\n\t-ind <\"yes\" if you need to index your bam files, or \"no\" if they are already indexed, default \"yes\">\n\nExample:\nSNPcallPipe.pl -stp indelrea -i ./Yuma/sam2bamout/ -o ./Yuma/indelout/ -rg ./Yuma/genomes/reference.fasta -snc 8 -ind yes\n\n"; exit;}
 		if (not defined ($snc)){$snc=8;}
 		if (not defined ($ind)){$ind="yes";}	
         	our @arg = ("-i $input","-o $output","-ind $ind","-ncp $snc","-rg $reference");
@@ -94,7 +94,7 @@ foreach $stp (@stptr){
 	}
 	elsif ($stp eq "calling" or $stprn == 5){
         	use bcftoolSNP;
-		if (not defined ($input && $output)){print "\nThis script will create the bcftools command to call SNPs for several samples in parallel. Its need the mapped bam files with realigned indels in a folder.\n\nUsage:\nSNPcallPipe -stp calling\n\t-i <input folder with mapped bam files with realigned indels>\n\t-o <output folder to save vcf files>\n\t-rg <reference genome>\n\t-snc <number the cores to be used in parallel, recomend to use the number of Chromosomes, default 20>\n\nExample:\nSNPcallPipe.pl -stp calling -i ./Yuma/indelrealigned/ -o ./Yuma/rawvcf/ -rg ./Yuma/genome/reference_genome.fasta -snc 23\n\n"; exit;}
+		if (not defined ($input && $output)){print "\nThis script will create the bcftools command to call SNPs for several samples in parallel. Its need the mapped bam files with realigned indels in a folder.\n\nUsage:\nSNPcallPipe -stp calling\n\t-i <input folder with mapped bam files with realigned indels>\n\t-o <output folder to save vcf files>\n\t-rg <reference genome>\n\t-snc <number the cores to be used in parallel, recommend to use the number of Chromosomes, default 20>\n\nExample:\nSNPcallPipe.pl -stp calling -i ./Yuma/indelrealigned/ -o ./Yuma/rawvcf/ -rg ./Yuma/genome/reference_genome.fasta -snc 23\n\n"; exit;}
 		if (not defined ($snc)){$snc = 20;}
 	        our @arg = ("-i $input","-o $output","-nc $snc","-rg $reference");
         	bcftoolSNP::callSNPs(@arg);
