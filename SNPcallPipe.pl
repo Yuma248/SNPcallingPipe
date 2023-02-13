@@ -18,7 +18,7 @@ while (@ARGV){
 	elsif ($_=~ /^-ind$/){$ind=shift @ARGV;}
 	elsif ($_=~ /^-exf$/){$exf=shift @ARGV;}
 }
-if (not defined ($stp)){print "\nThis pipeline will demultiplex, trim and\/or map reads, and call SNPs and filter them. The required arguments and inputs depend of the steps you want to perform. The script will start to run from the step you select by default, but if you what just to run one step, you will have to use the option -stpn 1. To check the step names run the script without arguments, if you want to check the arguments for one step just run the script with the specific step but whitout extra argumets (example SNPcallPipe.pl -stp trim).\n\nUsage:\nSNPcallPipe\n\t-stp <You need at least determine what steps you want to run>\n\t\tindref\: <Indexs the reference genome with samtools, picard and bowtie2>\n\t\tdemul\: <It will use stacks process_rad script, to demultiples samples base on a barcode file>\n\t\ttrim\: <It will use AdapterRemoval to trim and filter reads>\n\t\taligment\: <It will use bowtie2 or bwq to align reads to a referecne genome>\n\t\tdedup\: <This step will sort sam files, cnvert to bam and mask duplicates>\n\t\tindelrea\: <This step will locally realign indels, although this is not recomended any more>\n\t\tcalling\: <This step will use bcftool and mpileup to call variant sites SNP/indel>\n\t\tfiltering\: <This step will use vcftools to filter SNPs, I recommend to use this automatically to have an idea of your data, but play whit the parameters if you have the time>\n\n"; exit;}
+if (not defined ($stp)){print "\nThis pipeline will demultiplex, trim and\/or map reads, and call SNPs and filter them. The required arguments and inputs depend of the steps you want to perform. The script will start to run from the step you select by default, but if you what just to run one step, you will have to use the option -stpn 1. To check the step names run the script without arguments, if you want to check the arguments for one step just run the script with the specific step but whitout extra argumets (example SNPcallPipe.pl -stp trim).\n\nUsage:\nSNPcallPipe\n\t-stp <You need at least determine what steps you want to run>\n\t\tindref\: <Indexs the reference genome with samtools, picard and bowtie2>\n\t\tdemul\: <It will use stacks process_rad script, to demultiples samples base on a barcode file>\n\t\ttrim\: <It will use AdapterRemoval to trim and filter reads>\n\t\tconcat\: <It will concatenate fastq files of the same sample but different runs in one file>\n\t\taligment\: <It will use bowtie2 or bwq to align reads to a referecne genome>\n\t\tdedup\: <This step will sort sam files, cnvert to bam and mask duplicates>\n\t\tindelrea\: <This step will locally realign indels, although this is not recomended any more>\n\t\tcalling\: <This step will use bcftool and mpileup to call variant sites SNP/indel>\n\t\tfiltering\: <This step will use vcftools to filter SNPs, I recommend to use this automatically to have an idea of your data, but play whit the parameters if you have the time>\n\n"; exit;}
 if (not defined ($stprn)){$stprn = 0};
 if (not defined ($stpn)){$stpn =0};
 use File::Basename;
@@ -58,6 +58,16 @@ foreach $stp (@stptr){
 		if (not defined ($exf)){$exf ="1.fq.gz,2.fq.gz";}
         	our @arg = ("-i $input","-o $output","-fm $fm","-nc $snc","-exf $exf");
 	        RemAdap::trim(@arg);
+        	$stprn = 2;
+	}
+	elsif ($stp eq "concat" or $stprn == 1){
+		use concat;
+		if (not defined ($inputfolder && $outputfolder)){print "\nThis script will concatenate fastq files of raw or trimmed reads of several samples in parallel. It requires fastq files of all samples stored in the same folder\n\nUsage:\nConcat.pl\n\t-i <path to the folder with the input fastq files>\n\t-o <path to the output folder>\n Optional:\n\t-snc <number of runs in parallel, default 10>\n\t-t <method used for trimming. Trimmomatic TR, AdapterRemoval AR or None NO if are raw sequences, default AR>\n\t-exf <this will tell the script how to extract the name of each sample, and should include all extra information at the end of the file names that is not related to the sample name, default P1_L001_>\n\nFor example:\nconcat.pl -i /home/Yumafan/demultiplex/trimmed/ -o /home/Yumafan/concatenated-snc 10 -t AR -exf P1_L001_\n\n"; exit;}
+		if (not defined ($snc)){$snc =10;}
+		if (not defined ($type)){$type = "RA";}
+		if (not defined ($exf)){$exf ="P1_L001_";}
+        	our @arg = ("-i $input","-o $output","-nc $snc","-exf $exf","-t $type");
+	        concat::coca(@arg);
         	$stprn = 2;
 	}
 	elsif ($stp eq "aligment" or $stprn == 2){
