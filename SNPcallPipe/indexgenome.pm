@@ -22,6 +22,7 @@ $orgn =~ s/\.fna$//;
 `samtools faidx $inputfolder\/$orgn\.fna`;
 `java -Xmx4096m -jar $pf\/picard.jar CreateSequenceDictionary R=$inputfolder\/$orgn\.fna O=$inputfolder\/$orgn.dict`;
 `bowtie2-build  $inputfolder\/$orgn\.fna $inputfolder\/$orgn\.fna`;
+`bwa index $inputfolder\/$orgn\.fna $inputfolder\/$orgn\.fna`;
 #makeblastdb -in test.fsa -dbtype nucl
 
 }
