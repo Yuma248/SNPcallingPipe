@@ -55,11 +55,11 @@ foreach my $file (@files){ next unless ($file =~ /\.pair1\.truncated\.gz$/); my 
 #foreach my $name (@samplesnames){my $forward = "$inputfolder\/$name\.trim\.1\.fq\.gz"; my $reverse = "$inputfolder\/$name\.trim\.2\.fq\.gz"; my $output = " $outputfolder\/$name\.sam"; print "$name\t$forward\t$reverse\t$output\n";}
 #print "$count1\t$count2\n";
 if ($B eq "BWA"){
-my $cmd ="parallel -j $ncores --link --results ./logbwa1 --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.pair1\.truncated\.gz $inputfolder\/{1}\.pair2\.truncated\.gz >> $outputfolder\/{2}\.pairs.sam\" ::: @samplesnames ::: @names";
-my $cmd2 ="parallel -j $ncores --link --results ./logbwa2 --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.collapsed\.truncated\.gz  >> $outputfolder\/{2}\.collapsed\.truncated\.sam\" ::: @samplesnames ::: @names";
-my $cmd3 ="parallel -j $ncores --link --results ./logbwa3 --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.collapsed\.gz >> $outputfolder\/{2}\.collapsed\.sam\" ::: @samplesnames ::: @names";
-my $cmd4 ="parallel -j $ncores --link --results ./logbwa4 --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.singleton\.truncated\.gz >> $outputfolder\/{2}\.singleton\.truncated\.sam\" ::: @samplesnames ::: @names";
-my $cmd5 ="parallel -j $ncores --link --results ./logmerge --noswap samtools merge $mergefolder/{1}.sam $outputfolder/{1}.pairs.sam $outputfolder/{1}.collapsed.truncated.sam $outputfolder/{1}.collapsed.sam $outputfolder/{1}.singleton.truncated.sam -O SAM ::: @names";
+my $cmd ="parallel -j $ncores --link --results $outputfolder\/logbwa1 --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.pair1\.truncated\.gz $inputfolder\/{1}\.pair2\.truncated\.gz >> $outputfolder\/{2}\.pairs.sam\" ::: @samplesnames ::: @names";
+my $cmd2 ="parallel -j $ncores --link --results $outputfolder\/logbwa2 --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.collapsed\.truncated\.gz  >> $outputfolder\/{2}\.collapsed\.truncated\.sam\" ::: @samplesnames ::: @names";
+my $cmd3 ="parallel -j $ncores --link --results $outputfolder\/logbwa3 --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.collapsed\.gz >> $outputfolder\/{2}\.collapsed\.sam\" ::: @samplesnames ::: @names";
+my $cmd4 ="parallel -j $ncores --link --results $outputfolder\/logbwa4 --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.singleton\.truncated\.gz >> $outputfolder\/{2}\.singleton\.truncated\.sam\" ::: @samplesnames ::: @names";
+my $cmd5 ="parallel -j $ncores --link --results $outputfolder\/logmerge --noswap samtools merge $mergefolder/{1}.sam $outputfolder/{1}.pairs.sam $outputfolder/{1}.collapsed.truncated.sam $outputfolder/{1}.collapsed.sam $outputfolder/{1}.singleton.truncated.sam -O SAM ::: @names";
 #my $cmd ="parallel -j $ncores --results ./logfiles --noswap --delay 10 bowtie2 -x $refgenom -1 $inputfolder\/{1}\.trim\.1\.fq\.gz -2 $inputfolder\/{1}\.trim\.2\.fq\.gz -S $ouputfolder\/{1}\.sam --no-contain -X 800 --rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane -p $nc  ::: @samplesnames";
 #my $cmd ="parallel -j $ncores --results ./logfiles --noswap --delay 5 bowtie2 -x $refgenom -U $inputfolder\/{1}\.trim\.1\.fq\.gz -S $outputfolder\/{1}\.sam --no-contain -X 800 --rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane -p $nc  ::: @samplesnames";
 #print "$cmd\n";
@@ -74,11 +74,11 @@ system ($cmd4);
 system ($cmd5);
 }
 elsif ($B eq "B2"){
-my $cmd ="parallel -j $ncores --link --results ./logbowtie1 --noswap bowtie2 -p $nc -x $refgenom -1 $inputfolder\/{1}\.pair1\.truncated\.gz -2 $inputfolder\/{1}\.pair2\.truncated\.gz -S $outputfolder\/{2}\.pairs.sam --no-contain -X 1000 --rg-id {1} --rg SM:{1} --rg LB:library --rg PU:lane ::: @samplesnames ::: @names";
-my $cmd2 ="parallel -j $ncores --link --results ./logbowtie2 --noswap bowtie2 -p $nc -x $refgenom -U $inputfolder\/{1}\.collapsed\.truncated\.gz -S $outputfolder\/{2}\.collapsed\.truncated\.sam --rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane ::: @samplesnames ::: @names";
-my $cmd3 ="parallel -j $ncores --link --results ././logbowtie3 --noswap bowtie2 -p $nc -x $refgenom -U $inputfolder\/{1}\.collapsed\.gz -S $outputfolder\/{2}\.collapsed\.sam --rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane ::: @samplesnames ::: @names";
-my $cmd4 ="parallel -j $ncores --link --results ./logbowtie4 --noswap bowtie2 -p $nc -x $refgenom -U $inputfolder\/{1}\.singleton\.truncated\.gz -S $outputfolder\/{2}\.singleton\.truncated\.sam --rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane ::: @samplesnames ::: @names";
-my $cmd5 ="parallel -j $ncores --link --results ./logmerge --noswap samtools merge $mergefolder/{1}.sam $outputfolder/{1}.pairs.sam $outputfolder/{1}.collapsed.truncated.sam $outputfolder/{1}.collapsed.sam $outputfolder/{1}.singleton.truncated.sam -O SAM ::: @names";
+my $cmd ="parallel -j $ncores --link --results $outputfolder\/logbowtie1 --noswap bowtie2 -p $nc -x $refgenom -1 $inputfolder\/{1}\.pair1\.truncated\.gz -2 $inputfolder\/{1}\.pair2\.truncated\.gz -S $outputfolder\/{2}\.pairs.sam --no-contain -X 1000 --rg-id {1} --rg SM:{1} --rg LB:library --rg PU:lane ::: @samplesnames ::: @names";
+my $cmd2 ="parallel -j $ncores --link --results $outputfolder\/logbowtie2 --noswap bowtie2 -p $nc -x $refgenom -U $inputfolder\/{1}\.collapsed\.truncated\.gz -S $outputfolder\/{2}\.collapsed\.truncated\.sam --rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane ::: @samplesnames ::: @names";
+my $cmd3 ="parallel -j $ncores --link --results $outputfolder\/logbowtie3 --noswap bowtie2 -p $nc -x $refgenom -U $inputfolder\/{1}\.collapsed\.gz -S $outputfolder\/{2}\.collapsed\.sam --rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane ::: @samplesnames ::: @names";
+my $cmd4 ="parallel -j $ncores --link --results $outputfolder\/logbowtie4 --noswap bowtie2 -p $nc -x $refgenom -U $inputfolder\/{1}\.singleton\.truncated\.gz -S $outputfolder\/{2}\.singleton\.truncated\.sam --rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane ::: @samplesnames ::: @names";
+my $cmd5 ="parallel -j $ncores --link --results $outputfolder\/logmerge --noswap samtools merge $mergefolder/{1}.sam $outputfolder/{1}.pairs.sam $outputfolder/{1}.collapsed.truncated.sam $outputfolder/{1}.collapsed.sam $outputfolder/{1}.singleton.truncated.sam -O SAM ::: @names";
 #my $cmd ="parallel -j $ncores --results ./logfiles --noswap --delay 10 bowtie2 -x $refgenom -1 $inputfolder\/{1}\.trim\.1\.fq\.gz -2 $inputfolder\/{1}\.trim\.2\.fq\.gz -S $ouputfolder\/{1}\.sam --no-contain -X 800 --rg-id {1} --rg SM:{$
 #my $cmd ="parallel -j $ncores --results ./logfiles --noswap --delay 5 bowtie2 -x $refgenom -U $inputfolder\/{1}\.trim\.1\.fq\.gz -S $outputfolder\/{1}\.sam --no-contain -X 800 --rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --$
 print "$cmd\n";
@@ -98,19 +98,19 @@ elsif ($type eq "S"){
 foreach my $file (@files){ next unless ($file =~ /\.fastq\.gz$/ || $file =~ /\.fq\.gz$/); my @fileinf = split (/\./, $file); push @samplesnames, $fileinf[0]; my @nameinf = split (/\_/, $fileinf[0]); push @names, $nameinf[0]; if ($file =~ /\.fastq\.gz$/){our $format="fastq";}else{our $format="fq";}}
 if ($B eq "BWA"){
 if ($format eq "fq"){
-our  $cmd ="parallel -j $ncores --link --results ./logbwaSE --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.fq\.gz >> $outputfolder\/{1}\.sam\" ::: @names";
+our  $cmd ="parallel -j $ncores --link --results $outputfolder\/logbwaSE --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.fq\.gz >> $outputfolder\/{1}\.sam\" ::: @names";
 }
 elsif ($format eq "fastq"){
-our $cmd ="parallel -j $ncores --link --results ./logbwaSE --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.fastq\.gz >> $outputfolder\/{1}\.sam\" ::: @names";
+our $cmd ="parallel -j $ncores --link --results $outputfolder\/logbwaSE --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.fastq\.gz >> $outputfolder\/{1}\.sam\" ::: @names";
 }
 system ($cmd);
 }
 elsif ($B eq "B2"){
 if ($format eq "fq"){
-our $cmd = "parallel -j $ncores --link --results ./logbowtieSE --noswap bowtie2 -p $nc -x $refgenom -U $inputfolder\/{1}\.fq\.gz  -S $outputfolder\/{1}.sam--rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane ::: @samplesnames ::: @names";
+our $cmd = "parallel -j $ncores --link --results $outputfolder\/logbowtieSE --noswap bowtie2 -p $nc -x $refgenom -U $inputfolder\/{1}\.fq\.gz  -S $outputfolder\/{1}.sam--rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane ::: @samplesnames ::: @names";
 }
 elsif ($format eq "fastq"){
-our $cmd = "parallel -j $ncores --link --results ./logbowtieSE --noswap bowtie2 -p $nc -x $refgenom -U $inputfolder\/{1}\.fastq\.gz  -S $outputfolder\/{1}.sam--rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane ::: @samplesnames ::: @names";
+our $cmd = "parallel -j $ncores --link --results $outputfolder\/logbowtieSE --noswap bowtie2 -p $nc -x $refgenom -U $inputfolder\/{1}\.fastq\.gz  -S $outputfolder\/{1}.sam--rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane ::: @samplesnames ::: @names";
 }
 system ($cmd);
 }
