@@ -62,7 +62,7 @@ foreach $stp (@stptr){
 	}
 	elsif ($stp eq "concat" or $stprn == 1){
 		use concat;
-		if (not defined ($inputfolder && $outputfolder)){print "\nThis script will concatenate fastq files of raw or trimmed reads of several samples in parallel. It requires fastq files of all samples stored in the same folder\n\nUsage:\nConcat.pl\n\t-i <path to the folder with the input fastq files>\n\t-o <path to the output folder>\n Optional:\n\t-snc <number of runs in parallel, default 10>\n\t-t <method used for trimming. Trimmomatic TR, AdapterRemoval AR or None NO if are raw sequences, default AR>\n\t-exf <this will tell the script how to extract the name of each sample, and should include all extra information at the end of the file names that is not related to the sample name, default P1_L001_>\n\nFor example:\nconcat.pl -i /home/Yumafan/demultiplex/trimmed/ -o /home/Yumafan/concatenated -snc 10 -t AR -exf P1_L001_\n\n"; exit;}
+		if (not defined ($inputfolder && $outputfolder)){print "\nThis script will concatenate fastq files of raw or trimmed reads of several samples in parallel. It requires fastq files of all samples stored in the same folder\n\nUsage:\nSNPcallPipe.pl -stp concat\n\t-i <path to the folder with the input fastq files>\n\t-o <path to the output folder>\n Optional:\n\t-snc <number of runs in parallel, default 10>\n\t-t <method used for trimming. Trimmomatic TR, AdapterRemoval AR or None NO if are raw sequences, default AR>\n\t-exf <this will tell the script how to extract the name of each sample, and should include all extra information at the end of the file names that is not related to the sample name, default P1_L001_>\n\nFor example:\nSNPcallPipe.pl -stp concat -i /home/Yumafan/demultiplex/trimmed/ -o /home/Yumafan/concatenated -snc 10 -t AR -exf P1_L001_\n\n"; exit;}
 		if (not defined ($snc)){$snc =10;}
 		if (not defined ($type)){$type = "RA";}
 		if (not defined ($exf)){$exf ="P1_L001_";}
@@ -72,7 +72,7 @@ foreach $stp (@stptr){
 	}
 	elsif ($stp eq "aligment" or $stprn == 2){
         	use BWAB2;
-		if (not defined ($reference && $input && $output)){print "\nThis script will map reads of several samples to a reference genome using bwa-mem or bowtie2 in parallel. It requires files (after demultiplexing and trimming) of all samples stored in the same folder\n\nUsage:\nBWAparallel.pl\n\t-rg <path to the reference genome fasta file>\n\t-i <path to the folder with the input fasta files>\n\t-o <path to the output folder>\n Optional:\n\t-lnc <number of runs in parallel, default 1>\n\t-snc <number cores for each run, default 4>\n\t-al <aligner to be used, BWA or B2 for bowtie2, default BWA>\n\t-t <sequencing type single-end \"S\" or paired-end \"P\", default P> \n\nFor example:\nSNPcallPipe -stp aligment -rg /home/Yumafan/genome/reference_genome.fasta -i /home/Yumafan/demultiplex/trimmed/ -o /home/Yumafan/bwaout/ -lnc 10 -snc 4 -al BWA -t P\n\n"; exit;}
+		if (not defined ($reference && $input && $output)){print "\nThis script will map reads of several samples to a reference genome using bwa-mem or bowtie2 in parallel. It requires files (after demultiplexing and trimming) of all samples stored in the same folder\n\nUsage:\nSNPcallPipe.pl -stp aligment\n\t-rg <path to the reference genome fasta file>\n\t-i <path to the folder with the input fasta files>\n\t-o <path to the output folder>\n Optional:\n\t-lnc <number of runs in parallel, default 1>\n\t-snc <number cores for each run, default 4. The total number of cpus to be used will be lnc * snc>\n\t-al <aligner to be used, BWA or B2 for bowtie2, default BWA>\n\t-t <sequencing type single-end \"S\" or paired-end \"P\", default P> \n\nFor example:\nSNPcallPipe -stp aligment -rg /home/Yumafan/genome/reference_genome.fasta -i /home/Yumafan/demultiplex/trimmed/ -o /home/Yumafan/bwaout/ -lnc 10 -snc 4 -al BWA -t P\n\n"; exit;}
 		if (not defined ($lnc)){$lnc=1;}
 		if (not defined ($snc)){$snc=4;}
 		if (not defined ($B)){$B="BWA";}
@@ -84,7 +84,7 @@ foreach $stp (@stptr){
 	}
 	elsif ($stp eq "dedup" or $stprn == 3){
         	use samdedup;
-		if (not defined ($input)){print "\nThis script will convert from sam to bam, sort by name, fix mates, sort by coordinates and mark duplicates using samtools in parallel. Requires your sam files after mapping (sample01.sam), all save in one folder.\n\nUsages:\nSNPcallPipe.pl -stp dedup\n\t-i <path to inputfolder>\n\nOptional:\n\t-o <path to outputfolder, default samout>\n\t-lnc <number the cores or samples to use in parallel, default 4>\n\t-snc <number of cores per sample, default 1>\n\nExample:\nSNPcallPipe -stp dedup -i /home/Yumafan/demultiplex/trimmed/bwaout -o /home/Yumafan/dedupout/ -lnc 10 -snc 4\n\n";exit;}
+		if (not defined ($input)){print "\nThis script will convert from sam to bam, sort by name, fix mates, sort by coordinates and mark duplicates using samtools in parallel. Requires your sam files after mapping (sample01.sam), all save in one folder.\n\nUsages:\nSNPcallPipe.pl -stp dedup\n\t-i <path to inputfolder>\n\nOptional:\n\t-o <path to outputfolder, default samout>\n\t-lnc <number the cores or samples to use in parallel, default 4>\n\t-snc <number of cores per sample, default 1. The total number of cpus to be used will be lnc * snc >\n\nExample:\nSNPcallPipe -stp dedup -i /home/Yumafan/demultiplex/trimmed/bwaout -o /home/Yumafan/dedupout/ -lnc 10 -snc 4\n\n";exit;}
 		if (not defined ($lnc)){$lnc=4;}
 		if (not defined ($snc)){$snc=1;}
 		if (not defined ($output)){$output="./samout";}
@@ -95,10 +95,11 @@ foreach $stp (@stptr){
 	}
 	elsif ($stp eq "indelrea" or $stprn == 4){
         	use indelrealigment;
-		if (not defined ($reference && $input && $output)){print "\nThis script will create a list of indels per sample, and it will realign reads around indels for a more efficient variants calling. It uses GATK in parallel to process several samples at the same time, this step is not recommend anymore.\n\nUsage:\nSNPcallPipe.pl -stp indelrea\n\t-i <input folder with sorted bam files>\n\t-o <output folder to save the realignments>\n\t-rg <path to the reference genome>\nOptional:\n\t-snc <number cores to run in parallel, default 4>\n\t-ind <\"yes\" if you need to index your bam files, or \"no\" if they are already indexed, default \"yes\">\n\nExample:\nSNPcallPipe.pl -stp indelrea -i ./Yuma/sam2bamout/ -o ./Yuma/indelout/ -rg ./Yuma/genomes/reference.fasta -snc 8 -ind yes\n\n"; exit;}
+		if (not defined ($reference && $input && $output)){print "\nThis script will create a list of indels per sample, and it will realign reads around indels for a more efficient variants calling. It uses GATK in parallel to process several samples at the same time, this step is not recommend anymore.\n\nUsage:\nSNPcallPipe.pl -stp indelrea\n\t-i <input folder with sorted bam files>\n\t-o <output folder to save the realignments>\n\t-rg <path to the reference genome>\nOptional:\n\t-snc <number cores to run in parallel, default 4>\n\t-lnc <Some of the processes are heavy in RAM usage which limits the number of runs in parallel. But you can speed the first part using more cores with this parameter, default equal to -snc value. The total number of cpus to be used will be the biggest value of -lnc and -snc>\n\t-ind <\"yes\" if you need to index your bam files, or \"no\" if they are already indexed, default \"yes\">\n\nExample:\nSNPcallPipe.pl -stp indelrea -i ./Yuma/sam2bamout/ -o ./Yuma/indelout/ -rg ./Yuma/genomes/reference.fasta -snc 8 -ind yes\n\n"; exit;}
 		if (not defined ($snc)){$snc=8;}
+		if (not defined ($lnc)){$lnc=$snc;}
 		if (not defined ($ind)){$ind="yes";}	
-        	our @arg = ("-i $input","-o $output","-ind $ind","-ncp $snc","-rg $reference");
+        	our @arg = ("-i $input","-o $output","-ind $ind","-ncp $snc","-rg $reference", "-lncp $lnc");
 	        indelrealigment::indelreal(@arg);
         	$stprn = 5;
 	}
