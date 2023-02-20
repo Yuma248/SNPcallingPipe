@@ -6,8 +6,8 @@ my @arg = @_;
 foreach $ar (@arg){
 	if ($ar=~ /^-i/){our $inf= (split(/ /,$ar))[1];}
 	elsif ($ar=~ /^-o/){our $outf= (split(/ /,$ar))[1];}
-	elsif ($ar=~ /^-nc/){our $nc=(split(/ /,$ar))[1];}
-	elsif ($ar=~ /^-ncp/){our $ncp=(split(/ /,$ar))[1];}
+	elsif ($ar=~ /^-lnc/){our $nc=(split(/ /,$ar))[1];}
+	elsif ($ar=~ /^-snc/){our $ncp=(split(/ /,$ar))[1];}
 }
 
 if (not defined ($inf)){print "\nThis script will convert from sam to bam, sort by name, fixmates, sort by coordinates and markduplicates using samtools in parallel. Requires your sam files after mapping (sample01.sam), all save in one folder.\n\nUsages: samtoolsdup.pl\n\t-i <path to inputfolder>\n\nOptional:\n\t-o <path to outputfolder, default samout>\n\t-nc <number the cores or samples to use in parallel, default 4>\n\t-ncp <number of cores per sample, default 1>\n\n";exit;}
