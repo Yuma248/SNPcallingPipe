@@ -88,7 +88,7 @@ foreach $stp (@stptr){
 		if (not defined ($lnc)){$lnc=4;}
 		if (not defined ($snc)){$snc=1;}
 		if (not defined ($output)){$output="./samout";}
-	        our @arg = ("-i $input","-o $output","-nc $lnc","-ncp $snc");
+	        our @arg = ("-i $input","-o $output","-lnc $lnc","-snc $snc");
         	samdedup::dedup(@arg);
 	        $stprn = 4;
 
