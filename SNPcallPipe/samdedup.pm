@@ -18,14 +18,11 @@ our $fix=$outf."/fix";
 our $coor=$outf."/cdnt";
 our $ddp=$outf."/dedup";
 #print "$tmpdir\n";
-if ( !-d $outf ) {
-	`mkdir $outf`;
-	`mkdir $tmpdir`;
-	`mkdir $names`;
-	`mkdir $fix`;
-	`mkdir $coor`;
-	`mkdir $ddp`;
+if ( !-d $outf ) {`mkdir $outf`;}
+for $ofn ($tmpdi, $names, $fix, $coor, $ddp){
+if ( !-d $ofn ){`mkdir $ofn`;}
 }
+
 if (not defined ($nc)){$nc=4;}
 if (not defined ($ncp)){$ncp=1;}
 our $nct=$nc + $ncp;
