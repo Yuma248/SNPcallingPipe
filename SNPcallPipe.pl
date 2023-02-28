@@ -70,6 +70,16 @@ foreach $stp (@stptr){
 	       concat::coca(@arg);
         	$stprn = 2;
 	}
+	elsif ($stp eq "mergbam" or $stprn == 1){
+                use mergbam;
+		if (not defined ($inputfolder && $outputfolder)){print "\nThis script will merge bam files of different lanes or runs of the same sample, it is important that you check the runs have similar quality and have the same category of read (see samtools flagstat). The script can work wiht several samples in parallel. It requires bam files of all samples stored in the same folder\n\nUsage:\nSNPcallPipe.pl -stp merge\n\t-i <path to the folder with the input bam files>\n\t-o <path to the output folder>\n Optional:\n\t-snc <number of runs in parallel, default 10>\n\t-exf <this will tell the script how to extract the name of each sample, and should include all extra information at the end of the file names that is not related to the sample name, default _S*P1_L001_>\n\t-ind <if you need to samtools index the input files, default yes>\n\nFor example:\nSNPcallconcat.pl -i /home/Yumafan/dedupout/ -o /home/Yumafan/mergedbam -snc 10 -exf S*P1_L001__markdup -ind yes\n\n"; exit;}
+                if (not defined ($snc)){$snc =10;}
+                if (not defined ($exf)){$exf ="_S\*P1_L001__markdup";}
+                if (not defined ($ind)){$ind ="yes";}
+                our @arg = ("-i $input","-o $output","-snc $snc","-exf $exf", "-ind $ind");
+                mergbam::merg(@arg);
+                $stprn = 2;
+	}
 	elsif ($stp eq "alignment" or $stprn == 2){
         	use BWAB2;
 		if (not defined ($reference && $input && $output)){print "\nThis script will map reads of several samples to a reference genome using bwa-mem or bowtie2 in parallel. It requires files (after demultiplexing and trimming) of all samples stored in the same folder\n\nUsage:\nSNPcallPipe.pl -stp alignment\n\t-rg <path to the reference genome fasta file>\n\t-i <path to the folder with the input fasta files>\n\t-o <path to the output folder>\n Optional:\n\t-lnc <number of runs in parallel, default 1>\n\t-snc <number cores for each run, default 4. The total number of cpus to be used will be lnc * snc>\n\t-al <aligner to be used, BWA or B2 for bowtie2, default BWA>\n\t-t <sequencing type single-end \"S\" or paired-end \"P\", default P> \n\nFor example:\nSNPcallPipe.pl -stp alignment -rg /home/Yumafan/genome/reference_genome.fasta -i /home/Yumafan/demultiplex/trimmed/ -o /home/Yumafan/bwaout/ -lnc 10 -snc 4 -al BWA -t P\n\n"; exit;}
