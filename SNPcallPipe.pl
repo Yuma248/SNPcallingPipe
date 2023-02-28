@@ -113,18 +113,26 @@ foreach $stp (@stptr){
 	        indelrealigment::indelreal(@arg);
         	$stprn = 5;
 	}
-	elsif ($stp eq "calling" or $stprn == 5){
+        elsif ($stp eq "bedmarkrep" or $stprn == 5){
+                use bedmarkrep;
+		if (not defined ($input && $reference)){print "\nThis script will markrepeat regions using bedtools in parallel. Requires a repeat masked reference genome in a folder; and the samples  bam files after mapping, merge and mark duplicates all save in one folder.\n\nUsages: bedtoolsrepeats.pl\n\t-i <path to inputfolder>\n\t-rg <path to reference repeats masked, BAM/BED/GFF/VCF>\n\nOptional:\n\t-o <path to outputfolder, default bedout>\n\t-nc <number the cores or samples to use in parallel, default 4>\n\nFor example:\n\nbedtoolsrepeats.pl -i /yuma/dedup/ -o /yuma/repeatmrk/ -rg /yuma/makosharkgenome/repeat_mask_Iocy.bed -snc 60\n\n";exit;}
+                if (not defined ($snc)){$snc =4;}
+                if (not defined ($output)){$output ="./bedout";}
+                our @arg = ("-i $input","-o $output","-snc $snc","rg $reference");
+                bedmarkrep::markrep(@arg);
+                $stprn = 6;
+        }
+ 	elsif ($stp eq "calling" or $stprn == 6){
         	use bcftoolSNP;
 		if (not defined ($input && $output)){print "\nThis script will create the bcftools command to call SNPs for several samples in parallel. Its need the mapped bam files with realigned indels in a folder.\n\nUsage:\nSNPcallPipe -stp calling\n\t-i <input folder with mapped bam files with realigned indels>\n\t-o <output folder to save vcf files>\n\t-rg <reference genome>\n\t-snc <number the cores to be used in parallel, recommend to use the number of Chromosomes, default 20>\n\nExample:\nSNPcallPipe.pl -stp calling -i ./Yuma/indelrealigned/ -o ./Yuma/rawvcf/ -rg ./Yuma/genome/reference_genome.fasta -snc 23\n\n"; exit;}
 		if (not defined ($snc)){$snc = 20;}
 	        our @arg = ("-i $input","-o $output","-nc $snc","-rg $reference");
         	bcftoolSNP::callSNPs(@arg);
-	        $stprn = 6;
+	        $stprn = 7;
 	}
-	elsif ($stp eq "filtering" or $stprn == 6){
+	elsif ($stp eq "filtering" or $stprn == 7){
         	##use vcftoolsF;
 	        ##our @arg = ("-i $input","-o $output","-ind $ind","-ncp $lnc","-rg $reference");
         	##vcftoolsF::filteringY(@arg);
-	        ##$stprn = 7;
 	}
 }
