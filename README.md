@@ -18,6 +18,8 @@ Bowtie2
 
 BWA
 
+SNAP
+
 samtools
 
 bcftools
@@ -29,6 +31,16 @@ The easiest way to install the dependencies is using conda
 
 conda create --name SNPcallPipe -c conda-forge -c bioconda perl-parallel-loops parallel stacks adapterremoval bowtie2 bwa samtools bcftools vcftools
 
+for SNAP
+
+git clone https://github.com/amplab/snap.git
+
+cd snap
+
+make 
+
+
+then copy the snap-aligment to your path or incluide snap folder in your $PATH
 
 # Basic usage:
 
@@ -38,7 +50,7 @@ SNPcallPipe
 
         -stp <You need at least determine what steps you want to run>
         
-                indref: <Indexs the reference genome with samtools, picard and bowtie2>
+                indref: <Indexs the reference genome with samtools, picard, bowtie2 and snap>
                 
                 demul: <It will use stacks process_rad script, to demultiples samples base on a barcode file>
                 
