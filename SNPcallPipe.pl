@@ -32,7 +32,7 @@ our @stptr = split (/,/, $stp);
 foreach $stp (@stptr){
 	if ($stp eq "indref"){
         	use indexgenome;
-		if (not defined ($input && $reference)){print "\nThis script will index a reference genome using samtools, picard and bowtie2. The genome should have extension fna.\n\nUsage:\nSNPcallPipe.pl -stp indref\n\t-i <input folder where the reference is, and where all the indexes and dictionaries will be saved>\n\t-rg <the name of the reference genome incluiding the extention>\n\t-pf <path to the picar jar executable>\n\nExample:\nSNPcallpipe.pl -stp indref -i yuma/genomes/ -rg Taust.Chr.fna -pf /local/SNOcallPipe/\n"; exit;}
+		if (not defined ($input && $reference)){print "\nThis script will index a reference genome using samtools, picard, bowtie2 and snap. The genome should have extension fna.\n\nUsage:\nSNPcallPipe.pl -stp indref\n\t-i <input folder where the reference is, and where all the ouput indexes, dictionaries and folders will be saved>\n\t-rg <the name of the reference genome incluiding the extention>\n\t-pf <path to the picar jar executable>\n\nExample:\nSNPcallpipe.pl -stp indref -i yuma/genomes/ -rg Taust.Chr.fna -pf /local/SNOcallPipe/\n"; exit;}
 		if (not defined ($pf)){$pf = $SCP1;}
         	our @arg = ("-i $input","-rg $reference","-pf $pf");
 	        indexgenome::indrg(@arg);
@@ -82,7 +82,7 @@ foreach $stp (@stptr){
 	}
 	elsif ($stp eq "alignment" or $stprn == 2){
         	use BWAB2;
-		if (not defined ($reference && $input && $output)){print "\nThis script will map reads of several samples to a reference genome using bwa-mem or bowtie2 in parallel. It requires files (after demultiplexing and trimming) of all samples stored in the same folder\n\nUsage:\nSNPcallPipe.pl -stp alignment\n\t-rg <path to the reference genome fasta file>\n\t-i <path to the folder with the input fasta files>\n\t-o <path to the output folder>\n Optional:\n\t-lnc <number of runs in parallel, default 1>\n\t-snc <number cores for each run, default 4. The total number of cpus to be used will be lnc * snc>\n\t-al <aligner to be used, BWA or B2 for bowtie2, default BWA>\n\t-t <sequencing type single-end \"S\" or paired-end \"P\", default P> \n\nFor example:\nSNPcallPipe.pl -stp alignment -rg /home/Yumafan/genome/reference_genome.fasta -i /home/Yumafan/demultiplex/trimmed/ -o /home/Yumafan/bwaout/ -lnc 10 -snc 4 -al BWA -t P\n\n"; exit;}
+		if (not defined ($reference && $input && $output)){print "\nThis script will map reads of several samples to a reference genome using bwa-mem, bowtie2 or snap-aligner in parallel. It requires files (after demultiplexing and trimming) of all samples stored in the same folder\n\nUsage:\nSNPcallPipe.pl -stp alignment\n\t-rg <path to the reference genome fasta file, or referecne genome folder if SNAP is used>\n\t-i <path to the folder with the input fasta files>\n\t-o <path to the output folder>\n Optional:\n\t-lnc <number of runs in parallel, default 1>\n\t-snc <number cores for each run, default 4. The total number of cpus to be used will be lnc * snc>\n\t-al <aligner to be used, BWA,  B2 (bowtie2), or SNAP, default BWA>\n\t-t <sequencing type single-end \"S\" or paired-end \"P\", default P> \n\nFor example:\nSNPcallPipe.pl -stp alignment -rg /home/Yumafan/genome/reference_genome.fasta -i /home/Yumafan/demultiplex/trimmed/ -o /home/Yumafan/bwaout/ -lnc 10 -snc 4 -al BWA -t P\n\n"; exit;}
 		if (not defined ($lnc)){$lnc=1;}
 		if (not defined ($snc)){$snc=4;}
 		if (not defined ($B)){$B="BWA";}
