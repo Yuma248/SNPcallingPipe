@@ -36,12 +36,12 @@ For SNAP
 
         git clone https://github.com/amplab/snap.git
 
-cd snap
+        cd snap
 
-make 
+        make 
 
 
-then copy the snap-aligment to your path or incluide snap folder in your $PATH
+Then copy snap-aligment to your path or incluide snap folder in your $PATH
 
 # Basic usage:
 
@@ -57,7 +57,7 @@ SNPcallPipe
                 
                 trim: <It will use AdapterRemoval to trim and filter reads>
                 
-                aligment: <It will use bowtie2 or bwq to align reads to a referecne genome>
+                aligment: <It will use bowtie2, bwa or snap to align reads to a referecne genome>
                 
                 dedup: <This step will sort sam files, cnvert to bam and mask duplicates>
                 
