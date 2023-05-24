@@ -31,9 +31,10 @@ The easiest way to install the dependencies is using conda
 
 conda create --name SNPcallPipe -c conda-forge -c bioconda perl-parallel-loops parallel stacks adapterremoval bowtie2 bwa samtools bcftools vcftools
 
-for SNAP
 
-git clone https://github.com/amplab/snap.git
+For SNAP
+
+        git clone https://github.com/amplab/snap.git
 
 cd snap
 
