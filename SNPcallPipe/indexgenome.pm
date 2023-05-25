@@ -20,11 +20,23 @@ unless ($ref =~ m/\.fna$/){
 $orgn =~ s/\.fna$//;
 $OUTSNAP ="$inputfolder\/$orgn\_SNAP";
 `mkdir $OUTSNAP`;
-	
-`samtools faidx $inputfolder\/$orgn\.fna`;
-`java -Xmx4096m -jar $pf\/picard.jar CreateSequenceDictionary R=$inputfolder\/$orgn\.fna O=$inputfolder\/$orgn.dict`;
-`bowtie2-build  $inputfolder\/$orgn\.fna $inputfolder\/$orgn\.fna`;
-`bwa index $inputfolder\/$orgn\.fna $inputfolder\/$orgn\.fna`;
-`dragen-os --build-hash-table true --ht-reference $inputfolder\/$orgn\.fna --output-directory $OUTSNAP`;	
+our @cmds = ();
+$cmds[1] = "samtools faidx $inputfolder\/$orgn\.fna";
+$cmds[2] = "java -Xmx4096m -jar $pf\/picard.jar CreateSequenceDictionary R=$inputfolder\/$orgn\.fna O=$inputfolder\/$orgn.dict";
+$cmds[3] = "bowtie2-build  $inputfolder\/$orgn\.fna $inputfolder\/$orgn\.fna";
+$cmds[4] = "snap-aligner index $inputfolder\/$orgn\.fna $OUTSNAP";
+
+use Parallel::Loops;
+my $plraw = Parallel::Loops->new(4);
+$plraw->foreach (\@cmds, sub{
+my $cmd = $_ ;
+print ("$cmd\n");
+`$cmd`;
+#`samtools faidx $inputfolder\/$orgn\.fna`;
+#`java -Xmx4096m -jar $pf\/picard.jar CreateSequenceDictionary R=$inputfolder\/$orgn\.fna O=$inputfolder\/$orgn.dict`;
+#`bowtie2-build  $inputfolder\/$orgn\.fna $inputfolder\/$orgn\.fna`;
+#`bwa index $inputfolder\/$orgn\.fna $inputfolder\/$orgn\.fna`;
+#`dragen-os --build-hash-table true --ht-reference $inputfolder\/$orgn\.fna --output-directory $OUTSNAP`;
+});
 }
 1;
