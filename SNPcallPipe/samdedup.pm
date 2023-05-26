@@ -19,7 +19,7 @@ our $coor=$outf."/cdnt";
 our $ddp=$outf."/dedup";
 #print "$tmpdir\n";
 if ( !-d $outf ) {`mkdir $outf`;}
-for $ofn ($tmpdi, $names, $fix, $coor, $ddp){
+for $ofn ($tmpdir, $names, $fix, $coor, $ddp){
 if ( !-d $ofn ){`mkdir $ofn`;}
 }
 
