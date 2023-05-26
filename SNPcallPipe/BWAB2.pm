@@ -65,7 +65,7 @@ my $cmd ="parallel -j $ncores --link --results $outputfolder\/logsnap1 --noswap 
 my $cmd2 ="parallel -j $ncores --link --results $outputfolder\/logsnap2 --noswap snap-aligner single $refgenom -compressedFastq $inputfolder\/{1}\.collapsed\.truncated\.gz -so -o $outputfolder\/{2}\.collapsed\.truncated\.bam -t $nc ::: @samplesnames ::: @names";
 my $cmd3 ="parallel -j $ncores --link --results $outputfolder\/logsnap3 --noswap snap-aligner single $refgenom -compressedFastq $inputfolder\/{1}\.collapsed\.gz -so -o  $outputfolder\/{2}\.collapsed\.bam -t $nc ::: @samplesnames ::: @names";
 my $cmd4 ="parallel -j $ncores --link --results $outputfolder\/logsnap4 --noswap snap-aligner single $refgenom -compressedFastq $inputfolder\/{1}\.singleton\.truncated\.gz -so -o $outputfolder\/{2}\.singleton\.truncated\.bam -t $nc ::: @samplesnames ::: @names";
-my $cmd5 ="parallel -j $ncores --link --results $outputfolder\/logmerge --noswap samtools merge $mergefolder/{1}.sam $outputfolder/{1}.pairs.sam $outputfolder/{1}.collapsed.truncated.sam $outputfolder/{1}.collapsed.sam $outputfolder/{1}.singleton.truncated.sam -O SAM ::: @names";
+my $cmd5 ="parallel -j $ncores --link --results $outputfolder\/logmerge --noswap samtools merge $mergefolder/{1}.bam $outputfolder/{1}.pairs.bam $outputfolder/{1}.collapsed.truncated.bam $outputfolder/{1}.collapsed.bam $outputfolder/{1}.singleton.truncated.bam -O BAM ::: @names";
 system ($cmd);
 system ($cmd2);
 system ($cmd3);
