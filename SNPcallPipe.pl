@@ -21,19 +21,22 @@ while (@ARGV){
 if (not defined ($stp)){print "\nThis pipeline will demultiplex, trim and\/or map reads, and call SNPs and filter them. The required arguments and inputs depend of the steps you want to perform. The script will start to run from the step you select by default, but if you what just to run one step, you will have to use the option -stpn 1. To check the step names run the script without arguments, if you want to check the arguments for one step just run the script with the specific step but whitout extra argumets (example SNPcallPipe.pl -stp trim).\n\nUsage:\nSNPcallPipe\n\t-stp <You need at least determine what steps you want to run>\n\t\tindref\: <Indexs the reference genome with samtools, picard, bowtie2 and snap>\n\t\tdemul\: <It will use stacks process_rad script, to demultiples samples base on a barcode file>\n\t\ttrim\: <It will use AdapterRemoval to trim and filter reads>\n\t\tconcat\: <It will concatenate fastq files of the same sample but different runs in one file>\n\t\talignment\: <It will use bowtie2, bwa or snap to align reads to a referecne genome>\n\t\tdedup\: <This step will sort sam files, convert to bam and mask duplicates>\n\t\tindelrea\: <This step will locally realign indels, although this is not recomended any more>\n\t\tcalling\: <This step will use bcftool and mpileup to call variant sites SNP/indel>\n\t\tfiltering\: <This step will use vcftools to filter SNPs, I recommend to use this automatically to have an idea of your data, but play whit the parameters if you have the time>\n\n"; exit;}
 if (not defined ($stprn)){$stprn = 0};
 if (not defined ($stpn)){$stpn =0};
-use File::Basename;
-use lib dirname (__FILE__) . "/SNPcallPipe";
-use Cwd 'abs_path';
-my $SCP1= abs_path($0);
-$SCP1 =~ s/\.pl$/\//;
+#use File::Basename;
+#use lib dirname (__FILE__) . "/SNPcallPipe";
+#use Cwd 'abs_path';
+#my $SCP1= abs_path($0);
+#$SCP1 =~ s/\.pl$/\//;
 #use lib "/scratch/user/sand0335/github/SNPcallPipe";
+use FindBin qw($Bin);
+use lib "$Bin/../lib";
+chomp $Bin;
 our $stprn =0;
 our @stptr = split (/,/, $stp);
 foreach $stp (@stptr){
 	if ($stp eq "indref"){
         	use indexgenome;
 		if (not defined ($input && $reference)){print "\nThis script will index a reference genome using samtools, picard, bowtie2 and snap. The genome should have extension fna.\n\nUsage:\nSNPcallPipe.pl -stp indref\n\t-i <input folder where the reference is, and where all the ouput indexes, dictionaries and folders will be saved>\n\t-rg <the name of the reference genome incluiding the extention>\n\t-pf <path to the picar jar executable>\n\nExample:\nSNPcallpipe.pl -stp indref -i yuma/genomes/ -rg Taust.Chr.fna -pf /local/SNOcallPipe/\n"; exit;}
-		if (not defined ($pf)){$pf = $SCP1;}
+		if (not defined ($pf)){$pf = $Bin;}
         	our @arg = ("-i $input","-rg $reference","-pf $pf");
 	        indexgenome::indrg(@arg);
         	$stprn = 0;
@@ -109,7 +112,7 @@ foreach $stp (@stptr){
 		if (not defined ($snc)){$snc=8;}
 		if (not defined ($lnc)){$lnc=$snc;}
 		if (not defined ($ind)){$ind="yes";}	
-        	our @arg = ("-i $input","-o $output","-ind $ind","-ncp $snc","-rg $reference", "-lncp $lnc");
+        	our @arg = ("-i $input","-o $output","-ind $ind","-ncp $snc","-rg $reference", "-lnc $lnc", "-bf $Bin");
 	        indelrealigment::indelreal(@arg);
         	$stprn = 5;
 	}
