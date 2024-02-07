@@ -22,7 +22,7 @@ $OUTSNAP ="$inputfolder\/$orgn\_SNAP";
 `mkdir $OUTSNAP`;
 our @cmds = ();
 $cmds[1] = "samtools faidx $inputfolder\/$orgn\.fna";
-$cmds[2] = "java -Xmx4096m -jar $pf\/picard.jar CreateSequenceDictionary R=$inputfolder\/$orgn\.fna O=$inputfolder\/$orgn.dict";
+$cmds[2] = "java -Xmx4096m -jar $pf\/SNPcallPipe/picard.jar CreateSequenceDictionary R=$inputfolder\/$orgn\.fna O=$inputfolder\/$orgn.dict";
 $cmds[3] = "bowtie2-build  $inputfolder\/$orgn\.fna $inputfolder\/$orgn\.fna";
 $cmds[4] = "snap-aligner index $inputfolder\/$orgn\.fna $OUTSNAP";
 
