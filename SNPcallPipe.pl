@@ -50,7 +50,7 @@ foreach $stp (@stptr){
 		dDocent::demul(@arg);
 		$stprn = 1; 
 	}
-	 elsif ($stp eq "trim" or $stprn == 1){
+	elsif ($stp eq "trim" or $stprn == 1){
 		use RemAdap;
 		if (not defined ($input)){print "\nThis script will trim quality and collapse overlapping PE reads from several samples using AdapterRemoval in parallel. Requires your files compressed (sample01.1.fq.gz or sample01_1.fq.gz), all save in one folder, or each sample in a folders and all the folder per sample in one parental folder.\nIt has the option of remove barcodes if they were nor removed during demultiplexing step, for that it will require also a tab delimited barcodefile, with the first column the name of the sample (as in the fastq file) and second column the barcode sequence, if you want to remove also the RADtag, you can add it in the barcode sequence.\n\nUsages:\nSNPcallPipe.pl -stp trim\n\t-i <path to inputfolder, if samples are each in one folder use the option -fm>\n\nOptional:\n\t-o <path to outputfolder, default same as inputfolder>\n\t-snc <number the cores or samples to use in parallel, default 4>\n\t-fm <if sequence files are in one folder per sample (y or n), default n, either the folders or the sequences should be in one parental folder>\n\t-exf <Extension format of sequences fastq files, default 1.fq.gz,2.fq.gz>\n\t-rbar <If barcodes were not removed from sequences during demultiplexing step and you want to remove them, default not (n)>\n\t-bf <Patht to barcode file, it is required if you want to remove barcodes>\n\nExample:\nMELFUwgrs.pl -stp trim -i /yuma/WGS/ -o /yuma/remadap/ -fm y -snc 62 -exf F.fq.gz,R.fq.gz -rbar y -bf /path/to/barcodefile\n\n";exit;}
 		if (not defined ($output)){$output=$input;}
