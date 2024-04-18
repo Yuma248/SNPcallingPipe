@@ -51,7 +51,7 @@ if ($fm eq "n"){
 	}
 	else{
 	
-		foreach $name (@names){chomp $name; $name=~ s/$inf\///g; push (@nms, $name); $nBP=`grep $name $bf | cut -f 2 | wc -c`; push (@tbp5, $nBP);}
+		foreach $name (@names){chomp $name; $name=~ s/$inf\///g; push (@nms, $name); $nBP=`grep $name $bf | cut -f 2 | wc -c`; chomp $nBP; $nBP = $nBP - 1; push (@tbp5, $nBP);}
 			if ((scalar (@cod)) < 2){
 				my $cmd="parallel -j $nc --results $tmpdir --tmpdir $tmpdir --link AdapterRemoval --file1 $inf/{1}$cod[0] --basename $outf/{1}  --trim5p {2} --minlength 70 --trimns --trimqualities --collapse --gzip ::: @nms ::: @tbp5";
 				print "$cmd\n\n";
