@@ -46,7 +46,7 @@ print "$cmd\n\n$cmd2\n\n$cmd3\n\n$cmd4\n\n";
 if ($ext eq "sam") {
 `parallel -j $nc samtools view -bS $inf/{1}.sam \'\|\' samtools sort -n -\@ $ncp -o $names/{1}_namesort.bam - ::: @nms`;
 }elsif ($ext eq "sam") {
-`parallel -j $nc samtools sort -n -\@ $ncp -o $names/{1}_namesort.bam  $inf/{1}.bam ::: @nms
+`parallel -j $nc samtools sort -n -\@ $ncp -o $names/{1}_namesort.bam  $inf/{1}.bam ::: @nms`;
 }
 `parallel -j $nc samtools fixmate -m $names/{1}_namesort.bam $fix/{1}_fixmate.bam ::: @nms`;
 `parallel -j $nc samtools sort -\@ $ncp -o $coor/{1}_positionsort.bam $fix/{1}_fixmate.bam ::: @nms`;
