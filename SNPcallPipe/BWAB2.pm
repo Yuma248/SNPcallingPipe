@@ -41,7 +41,7 @@ my $cmd ="parallel -j $ncores --link --results $outputfolder\/logbwa1 --noswap \
 my $cmd2 ="parallel -j $ncores --link --results $outputfolder\/logbwa2 --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.collapsed\.truncated\.gz  >> $outputfolder\/{2}\.collapsed\.truncated\.sam\" ::: @samplesnames ::: @names";
 my $cmd3 ="parallel -j $ncores --link --results $outputfolder\/logbwa3 --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.collapsed\.gz >> $outputfolder\/{2}\.collapsed\.sam\" ::: @samplesnames ::: @names";
 my $cmd4 ="parallel -j $ncores --link --results $outputfolder\/logbwa4 --noswap \"bwa mem -t $nc $refgenom $inputfolder\/{1}\.singleton\.truncated\.gz >> $outputfolder\/{2}\.singleton\.truncated\.sam\" ::: @samplesnames ::: @names";
-my $cmd5 ="parallel -j $ncores --link --results $outputfolder\/logmerge --noswap samtools merge $mergefolder/{1}.sam $outputfolder/{1}.pairs.sam $outputfolder/{1}.collapsed.truncated.sam $outputfolder/{1}.collapsed.sam $outputfolder/{1}.singleton.truncated.sam -O SAM ::: @names";
+my $cmd5 ="parallel -j $ncores --link --results $outputfolder\/logmerge --noswap samtools merge $mergefolder/{1}.bam $outputfolder/{1}.pairs.sam $outputfolder/{1}.collapsed.truncated.sam $outputfolder/{1}.collapsed.sam $outputfolder/{1}.singleton.truncated.sam -O BAM ::: @names";
 system ($cmd);
 system ($cmd2);
 system ($cmd3);
@@ -53,7 +53,7 @@ my $cmd ="parallel -j $ncores --link --results $outputfolder\/logbowtie1 --noswa
 my $cmd2 ="parallel -j $ncores --link --results $outputfolder\/logbowtie2 --noswap bowtie2 -p $nc -x $refgenom -U $inputfolder\/{1}\.collapsed\.truncated\.gz -S $outputfolder\/{2}\.collapsed\.truncated\.sam --rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane ::: @samplesnames ::: @names";
 my $cmd3 ="parallel -j $ncores --link --results $outputfolder\/logbowtie3 --noswap bowtie2 -p $nc -x $refgenom -U $inputfolder\/{1}\.collapsed\.gz -S $outputfolder\/{2}\.collapsed\.sam --rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane ::: @samplesnames ::: @names";
 my $cmd4 ="parallel -j $ncores --link --results $outputfolder\/logbowtie4 --noswap bowtie2 -p $nc -x $refgenom -U $inputfolder\/{1}\.singleton\.truncated\.gz -S $outputfolder\/{2}\.singleton\.truncated\.sam --rg-id {1} --rg SM:{1} --rg LB:library --rg PL:ILLUMINA --rg PU:lane ::: @samplesnames ::: @names";
-my $cmd5 ="parallel -j $ncores --link --results $outputfolder\/logmerge --noswap samtools merge $mergefolder/{1}.sam $outputfolder/{1}.pairs.sam $outputfolder/{1}.collapsed.truncated.sam $outputfolder/{1}.collapsed.sam $outputfolder/{1}.singleton.truncated.sam -O SAM ::: @names";
+my $cmd5 ="parallel -j $ncores --link --results $outputfolder\/logmerge --noswap samtools merge $mergefolder/{1}.bam $outputfolder/{1}.pairs.sam $outputfolder/{1}.collapsed.truncated.sam $outputfolder/{1}.collapsed.sam $outputfolder/{1}.singleton.truncated.sam -O BAM ::: @names";
 system ($cmd);
 system ($cmd2);
 system ($cmd3);
