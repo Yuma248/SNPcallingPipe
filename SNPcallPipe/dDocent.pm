@@ -10,6 +10,7 @@ foreach $ar (@arg){
         elsif ($ar=~ /^-rad/){$radtag=(split(/ /, $ar))[1];}
 	elsif ($ar=~ /^-lnc/){$lnc=(split(/ /, $ar))[1];}
 	elsif ($ar=~ /^-snc/){$snc=(split(/ /, $ar))[1];}
+ 	elsif ($ar=~ /^-dd/){$dd=(split(/ /, $ar))[1];}
 ##        elsif ($ar=~ /^-stp/){(split(/ /, $ar))[1];}
 }
 if (not defined ($input && $output && $barcode_file)){print "\nThis script uses stacks's process_rad to demultiplex fasta files.\n\nUsage:\ndDocent_process_PE.pl\n\t-i <directory with raw sequencing files>\n\t-o <output folder, if it does no exist it will be created>\n\t-bf <barcode file, tab delimited (LaneName SampleName Barcode Single Popnumber)>\nOptional:\n\t-lnc <number of lanes in parallel, or number of R1 files in you folder. default 1>\n\t-snc <number of samples perl lane in parallel, optimum 58/number of R1 files in you folder. default 10>\n\t-rad <RAD_tag, default TGCAGG TAA>\n\nFor example:\nSNPcallPipe.pl -stp demul -i /yuma/rawread/ -o /yuma/demultiplex -bf /yuma/barcodefile -lnc 1 -snc 10 \n\n"; exit;}
@@ -23,6 +24,8 @@ if (not defined $radtag){$radtag = "TGCAGG\tTAA\tsample";} ## default RAD-tag
 if (not defined $lnc){$nc=1;}
 if (not defined $snc){$nc=10;}
 if (not defined $step){$step=1;}
+if (not defined $dd){$dd="F";}
+
 #my @inputfiles = glob("$input/*");
 
 open(FILE, $barcode_file);
@@ -36,16 +39,32 @@ chomp ($line);
 my @try = split(/\t/,$line);
 #my $test=scalar @try;
 #print "$test\n";
-if ($#try !=4){print "check format of $barcode_file file\nData should be in this order:\nRaw_sequencing_file\tsample_name\tBarcode\ttype(Parent or Single or Progeney)\tpop\n"; exit;}
-my ($raw_file,$sample_name, $barcode, $type,$popmap) = split(/\t/,$line);
-$hash_raw{$raw_file}=1;
-$hash{$sample_name} = $type;
-$hash_pop{$sample_name}=$popmap;
-$hash{$raw_file}{traceno}{$trace} = $barcode;
-$hash{$raw_file}{code}{$barcode}=$sample_name;
-$trace++;
-print POPMAP "$sample_name\_1.RAD\t$popmap\n";
-print POPMAP "$sample_name\_2.RAD\t$popmap\n";
+if($dd eq "F"){
+	if ($#try !=4){print "check format of $barcode_file file\nData should be in this order:\nRaw_sequencing_file\tsample_name\tBarcode\ttype(Parent or Single or Progeney)\tpop\n"; exit;}
+	else{my ($raw_file,$sample_name, $barcode, $type,$popmap) = split(/\t/,$line);
+		$hash_raw{$raw_file}=1;
+		$hash{$sample_name} = $type;
+		$hash_pop{$sample_name}=$popmap;
+		$hash{$raw_file}{traceno}{$trace} = $barcode;
+		$hash{$raw_file}{code}{$barcode}=$sample_name;
+		$trace++;
+		print POPMAP "$sample_name\_1.RAD\t$popmap\n";
+		print POPMAP "$sample_name\_2.RAD\t$popmap\n";
+	}
+}
+elsif ($dd eq "FR"){
+	if ($#try !=5){print "check format of $barcode_file file\nData should be in this order:\nRaw_sequencing_file\tsample_name\tBarcodeF\tBarcodeR\ttype(Parent or Single or Progeney)\tpop\n"; exit;}
+	else {my ($raw_file,$sample_name, $barcode1, $barcode2, $type,$popmap) = split(/\t/,$line);
+		$barcode12 = $barcode1."-".$barcode2;
+		$hash_raw{$raw_file}=1;
+		$hash{$sample_name} = $type;
+		$hash_pop{$sample_name}=$popmap;
+		$hash{$raw_file}{traceno}{$trace} = $barcode12;
+		$hash{$raw_file}{code}{$barcode12}=$sample_name;
+		$trace++;
+        	print POPMAP "$sample_name\_1.RAD\t$popmap\n";
+        	print POPMAP "$sample_name\_2.RAD\t$popmap\n";
+	}
 }
 close BARCODE;
 open (RADFILE, '>RAD.txt');
@@ -71,8 +90,11 @@ chomp($raw);
 my $tmpbarcodef="$raw\_barcode_tmp.txt";
 open (BARCODE , '>', $tmpbarcodef);
 	foreach my $file_number (keys %{$hash{$raw}{'traceno'}}){
-				print BARCODE $hash{$raw}{traceno}{$file_number},"\n";
-				}
+                               our $barcodeT = $hash{$raw}{traceno}{$file_number};
+                                $barcodeT =~ s/-/\t/;
+                                if ($dd eq "F"){print BARCODE $hash{$raw}{traceno}{$file_number},"\n";}
+                                if ($dd eq "FR") {print BARCODE $barcodeT,"\n"; print "$barcodeT\tsample\n";}
+                                }
 			close BARCODE;
 	if (($inputfile[0] =~ /\.fastq$|\.fq$/i) && ($inputfile[1] =~ /\.fastq$|\.fq$/i)){$format = 'fastq';}
 	if (($inputfile[0] =~ /\.gz$/i) && ($inputfile[1] =~ /\.gz$/i)){$format = 'gzfastq';}
@@ -80,7 +102,8 @@ open (BARCODE , '>', $tmpbarcodef);
 	our $radtemp="$output\/$raw\_radtemp";
         if ($step<2){
 	`mkdir $outtemp $radtemp`;
-	`process_radtags -P -1 $inputfile[0] -2 $inputfile[1] -o $outtemp -b $tmpbarcodef -e sbfI -E phred33 -r --disable_rad_check --barcode_dist_1 1 -i $format`;
+ 	if ($dd eq "F"){`process_radtags -P -1 $inputfile[0] -2 $inputfile[1] -o $outtemp -b $tmpbarcodef -e sbfI -E phred33 -r --disable_rad_check --barcode_dist_1 1 -i $format`;}
+  	elsif ($dd eq "FR"){`process_radtags -P -1 $inputfile[0] -2 $inputfile[1] -o $outtemp -b $tmpbarcodef -e sbfI -E phred33 -r --barcode_dist_1 1 --barcode_dist_2 2 --inline_inline --disable_rad_check -i $format`;}
 	`mv $outtemp/*\.log $output/log/$raw\_barcode.log`;
 	`mkdir $output/$raw`;
 	`mkdir $output/$raw/remain_reads`;
@@ -109,7 +132,8 @@ my $s_name = $hash{$raw}{code}{$bcode};
 #            print "Second step is working too\n";
 #	    s/$raw\_outtemp\///g for @outfiles;
 #		print "This is the $outfiles[0] and $outfiles[1]\n\n\n";
-                                                                                                `process_radtags -P -1 $outfiles[0] -2 $outfiles[1] -o $radtemp/$s_name -b RAD.txt -e sbfI -E phred33 -r --barcode_dist_1 2 --barcode_dist_2 2 --inline_inline --disable_rad_check -i gzfastq`;
+                                                                                                if ( $dd eq "F") {`process_radtags -P -1 $outfiles[0] -2 $outfiles[1] -o $radtemp/$s_name -b RAD.txt -e sbfI -E phred33 -r --barcode_dist_1 2 --barcode_dist_2 2 --inline_inline --disable_rad_check -i gzfastq`;}
+												if ( $dd eq "FR") {`process_radtags -P -1 $outfiles[0] -2 $outfiles[1] -o $radtemp/$s_name -b RAD.txt -e sbfI -E phred33 -r --barcode_dist_1 2 --barcode_dist_2 1 --inline_inline --disable_rad_check -i gzfastq`;}
                                                                                                `mv $radtemp/$s_name/*.log $output/log/$raw\_$s_name\_radtag.log`;
                                                                                                 `mv $radtemp/$s_name/sample.1.fq.gz $outdDocent/pop$hash_pop{$s_name}\_$s_name.F.fq.gz`;
 	                       	                                                                `mv $radtemp/$s_name/sample.2.fq.gz $outdDocent/pop$hash_pop{$s_name}\_$s_name.R.fq.gz`;
